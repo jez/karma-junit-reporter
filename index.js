@@ -174,6 +174,28 @@ var JUnitReporter = function (baseReporterDecorator, config, logger, helper, for
       suite.att('errors', result.disconnected || result.error ? 1 : 0)
       suite.att('failures', result.failed ? result.failed : 0)
       suite.att('time', (result.netTime || 0) / 1000)
+
+      var disconnectedSpec
+      if (result.disconnected) {
+        var name = 'Browser disconnected. See the logs for more information.'
+        var time = 0
+        if (NEWXML) {
+          disconnectedSpec = suite
+            .ele('testCase', {
+              name: name,
+              duration: time
+            })
+        } else {
+          disconnectedSpec = suite
+            .ele('testcase', {
+              name: 'Browser disconnected. See the logs for more information.',
+              time: time,
+              classname: ''
+            })
+        }
+        disconnectedSpec.ele('failure', {type: ''}).dat(allMessages.join() + '\n')
+      }
+
       suite.ele('system-out').dat(allMessages.join() + '\n')
       suite.ele('system-err')
     }
